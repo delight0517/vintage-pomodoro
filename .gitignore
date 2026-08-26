@@ -1,0 +1,6 @@
+# 빌드 산출물 — 커밋 금지 (Release 자산으로만 배포)
+msix-staging/
+msix-output/
+*.msix
+*.zip
+_check.js
