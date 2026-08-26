@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vintage Pomodoro — 방해 없는 25분 (Windows · macOS)</title>
+<meta name="description" content="Windows·macOS용 빈티지 포모도로 타이머. 집중이 끝나면 휴식을 강제하고, 하루를 조용히 기록합니다. 무료 다운로드 + 브라우저 데모.">
+<meta property="og:title" content="Vintage Pomodoro — 방해 없는 25분">
+<meta name="theme-color" content="#EEEAE0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='55' r='40' fill='%23E2503E'/><rect x='46' y='8' width='8' height='14' rx='3' fill='%239C7A45'/><ellipse cx='50' cy='24' rx='16' ry='7' fill='%234F6350'/></svg>">
+<style>
+  :root {
+    --bg: #EEEAE0; --bg2: #E3DDCC; --paper: #FAF9F4;
+    --ink: #332A20; --inkSoft: #6F6759; --rule: #DCD6C4;
+    --brass: #9C7A45; --brass2: #7D5F34;
+    --red: #E2503E; --red2: #C7392A; --green: #4F6350;
+    --serif: 'Georgia', 'Nanum Myeongjo', 'Batang', 'Times New Roman', serif;
+    --mono: 'Courier New', monospace;
+    --sans: -apple-system, 'Segoe UI', 'Pretendard', 'Malgun Gothic', sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--bg);
+    background-image: repeating-linear-gradient(0deg, transparent 0 27px, rgba(51,42,32,.028) 27px 28px);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.65;
+  }
+  ::selection { background: rgba(156,122,69,.28); }
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 0 22px; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -.01em; }
+
+  /* ── 상단 바 ─────────────────────────── */
+  nav {
+    position: sticky; top: 0; z-index: 30;
+    background: rgba(238,234,224,.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .nav-inner { display:flex; align-items:center; justify-content:space-between; height:60px; }
+  .brand { display:flex; align-items:center; gap:10px; font-family:var(--serif); font-size:17px; font-weight:700; }
+  .brand-mark {
+    width:26px; height:26px; border-radius:50%; position:relative;
+    background: radial-gradient(circle at 38% 34%, #ef6f5c, var(--red) 58%, var(--red2));
+    box-shadow: inset 0 -3px 6px rgba(0,0,0,.18);
+  }
+  .brand-mark::after {
+    content:""; position:absolute; left:50%; top:-7px; transform:translateX(-50%);
+    width:12px; height:7px; border-radius:50%; background:var(--green);
+  }
+  .nav-right { display:flex; align-items:center; gap:14px; }
+  .lang-toggle { display:flex; border:1px solid var(--rule); border-radius:999px; overflow:hidden; }
+  .lang-toggle button {
+    border:0; background:transparent; padding:5px 13px; cursor:pointer;
+    font-size:12.5px; font-weight:700; color:var(--inkSoft); font-family:var(--sans); letter-spacing:.06em;
+  }
+  .lang-toggle button.on { background: var(--ink); color: var(--paper); }
+  .nav-dl {
+    text-decoration:none; font-size:13.5px; font-weight:800; color:#fff;
+    background: var(--red); padding:9px 18px; border-radius:999px;
+    box-shadow: 0 3px 10px rgba(226,80,62,.35); transition: transform .15s;
+  }
+  .nav-dl:hover { transform: translateY(-1px); }
+
+  /* ── 히어로 ─────────────────────────── */
+  header.hero { padding: 84px 0 40px; text-align:center; }
+  .badge {
+    display:inline-block; font-size:12px; letter-spacing:.14em; font-weight:700;
+    color: var(--brass2); border:1px solid var(--rule); background:var(--paper);
+    padding:6px 16px; border-radius:999px; margin-bottom:26px;
+  }
+  .hero h1 { font-size: clamp(34px, 6vw, 56px); line-height:1.18; }
+  .hero h1 em { font-style:normal; color: var(--red); }
+  .hero p.sub {
+    max-width: 560px; margin: 22px auto 0; color: var(--inkSoft); font-size: 16.5px;
+  }
+  .cta-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:34px; }
+  .btn {
+    display:inline-flex; align-items:center; gap:9px; text-decoration:none;
+    font-weight:800; font-size:15.5px; border-radius:12px; padding:15px 26px;
+    transition: transform .15s, box-shadow .15s; cursor:pointer; border:0;
+  }
+  .btn-primary { background: var(--red); color:#fff; box-shadow: 0 6px 18px rgba(226,80,62,.35); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(226,80,62,.4); }
+  .btn-mac { background: var(--paper); color: var(--inkSoft); border:1px solid var(--rule); opacity:.75; cursor:not-allowed; }
+  .btn-ghost { background:transparent; color: var(--ink); border:1.5px solid var(--ink); }
+  .btn-ghost:hover { background: rgba(51,42,32,.05); }
+  .dl-note { margin-top:14px; font-size:12px; color:var(--inkSoft); font-family:var(--mono); }
+
+  /* ── 데모 ─────────────────────────── */
+  .demo-band { padding: 46px 0 20px; }
+  .demo-frame {
+    max-width: 520px; margin: 0 auto; background: var(--paper);
+    border: 1px solid var(--rule); border-radius: 18px;
+    box-shadow: 0 24px 50px rgba(51,42,32,.14), 0 2px 0 rgba(255,255,255,.6) inset;
+    padding: 30px 28px 24px; text-align:center; position:relative; overflow:hidden;
+  }
+  .demo-tag {
+    position:absolute; top:14px; right:-34px; transform:rotate(38deg);
+    background:var(--brass); color:var(--paper); font-size:10.5px; font-weight:800;
+    letter-spacing:.12em; padding:4px 40px;
+  }
+  .demo-title { font-family:var(--mono); font-size:11.5px; letter-spacing:.22em; color:var(--inkSoft); text-transform:uppercase; }
+  .ring-wrap { position:relative; width:210px; height:210px; margin:20px auto 6px; }
+  svg.ring { width:100%; height:100%; transform:rotate(-90deg); }
+  .ring circle { fill:none; stroke-width:10; stroke-linecap:round; }
+  .ring .track { stroke: var(--bg2); }
+  .ring .bar { stroke: var(--green); transition: stroke-dashoffset .3s linear, stroke .5s; }
+  .time-big { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  #dTime { font-family: var(--mono); font-size:47px; font-weight:700; letter-spacing:.02em; }
+  #dPhase { margin-top:4px; font-size:12.5px; font-weight:700; letter-spacing:.2em; color:var(--inkSoft); }
+  .demo-controls { display:flex; gap:9px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
+  .d-btn {
+    font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer;
+    border-radius:10px; padding:10px 20px; border:1px solid var(--rule);
+    background:#fff; color:var(--ink); transition: all .15s;
+  }
+  .d-btn.go { background: var(--green); border-color:var(--green); color:#fff; }
+  .d-btn.stop { background: var(--red); border-color:var(--red); color:#fff; }
+  .steppers { display:flex; gap:22px; justify-content:center; margin-top:18px; padding-top:16px; border-top:1px dashed var(--rule); }
+  .step label { display:block; font-size:11.5px; color:var(--inkSoft); margin-bottom:5px; font-weight:600; }
+  .step .sg { display:flex; align-items:center; gap:7px; }
+  .step button { width:24px; height:24px; border-radius:7px; border:1px solid var(--rule); background:var(--paper); cursor:pointer; font-size:14px; line-height:1; color:var(--ink); }
+  .step b { min-width:44px; text-align:center; font-family:var(--mono); font-size:15px; }
+  .demo-stats { margin-top:14px; font-size:12.5px; color:var(--inkSoft); font-family:var(--mono); }
+  .demo-cap { text-align:center; margin-top:14px; font-size:12.5px; color:var(--inkSoft); }
+
+  /* ── 섹션 공통 ─────────────────────── */
+  section { padding: 74px 0; }
+  .kicker { font-family:var(--mono); font-size:11.5px; letter-spacing:.24em; color:var(--brass2); text-transform:uppercase; margin-bottom:12px; }
+  h2.sec { font-size: clamp(26px, 4vw, 36px); margin-bottom: 14px; }
+  p.sec-sub { color:var(--inkSoft); max-width:600px; }
+  .rule-line { width:64px; height:3px; background:var(--brass); margin-top:18px; border-radius:2px; }
+
+  .feat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-top:44px; }
+  .feat {
+    background:var(--paper); border:1px solid var(--rule); border-radius:14px; padding:24px 22px;
+    transition:transform .18s, box-shadow .18s;
+  }
+  .feat:hover { transform:translateY(-4px); box-shadow:0 14px 30px rgba(51,42,32,.12); }
+  .feat .ic { font-size:26px; }
+  .feat h3 { font-size:17.5px; margin:12px 0 8px; }
+  .feat p { font-size:14px; color:var(--inkSoft); }
+
+  /* 설득 섹션 */
+  .why { background: var(--ink); color:#EFE9DA; }
+  .why .kicker { color:#C79A5E; }
+  .why-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:34px; margin-top:48px; }
+  .why-item .num { font-family:var(--mono); font-size:40px; font-weight:700; color:#C79A5E; }
+  .why-item h3 { color:#F5EFE0; font-size:19px; margin:10px 0 8px; }
+  .why-item p { font-size:14px; color:#BDB49E; }
+  .why-quote { margin-top:54px; border-left:3px solid #C79A5E; padding-left:22px; font-family:var(--serif); font-size:21px; line-height:1.6; color:#EFE9DA; }
+  .why-quote small { display:block; margin-top:10px; font-family:var(--sans); font-size:12px; color:#9A9078; }
+
+  /* 스크린 목업 */
+  .shots { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin-top:44px; }
+  .shot { background:var(--paper); border:1px solid var(--rule); border-radius:16px; overflow:hidden; box-shadow:0 12px 28px rgba(51,42,32,.1); }
+  .shot-bar { height:30px; background:var(--bg2); border-bottom:1px solid var(--rule); display:flex; align-items:center; gap:5px; padding:0 12px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--rule); }
+  .shot-body { padding:26px 18px; text-align:center; }
+  .shot-body .cap { margin-top:16px; font-size:12.5px; color:var(--inkSoft); font-weight:600; }
+  .mini-ring { position:relative; width:120px; height:120px; margin:0 auto; }
+  .lock-screen {
+    background: linear-gradient(160deg, var(--red), var(--red2)); border-radius:10px;
+    color:#fff; padding:34px 10px; font-family:var(--mono);
+  }
+  .lock-screen .lt { font-size:11px; letter-spacing:.28em; opacity:.85; }
+  .lock-screen .lm { font-size:37px; font-weight:700; margin-top:6px; }
+  .lock-screen .ll { font-size:11.5px; margin-top:10px; opacity:.85; font-family:var(--sans); }
+
+  /* 다운로드 섹션 */
+  .dl-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-top:44px; }
+  .dl-card { background:var(--paper); border:1.5px solid var(--rule); border-radius:16px; padding:28px 24px; }
+  .dl-card.win { border-color: rgba(226,80,62,.45); }
+  .os-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .os-name { font-family:var(--serif); font-size:21px; font-weight:700; }
+  .pill { font-size:10.5px; font-weight:800; letter-spacing:.1em; padding:4px 10px; border-radius:999px; }
+  .pill.ready { background:rgba(79,99,80,.14); color:var(--green); }
+  .pill.soon { background:rgba(156,122,69,.14); color:var(--brass2); }
+  ol.steps { margin:14px 0 20px 18px; font-size:13.5px; color:var(--inkSoft); }
+  ol.steps li { margin-bottom:7px; }
+  .btn-block { display:block; text-align:center; }
+  .btn-disabled { display:block; text-align:center; background:var(--bg2); color:var(--inkSoft); font-weight:700; padding:15px 26px; border-radius:12px; font-size:15px; cursor:not-allowed; }
+  .smartnote { margin-top:12px; font-size:11.5px; color:var(--inkSoft); }
+
+  footer { border-top:1px solid var(--rule); padding:36px 0 44px; color:var(--inkSoft); font-size:12.5px; }
+  .foot-inner { display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; align-items:center; }
+  footer a { color:var(--brass2); }
+
+  @media (max-width:560px){
+    header.hero{ padding-top:56px; }
+    .nav-dl{ padding:8px 13px; font-size:12.5px; }
+    .steppers{ gap:12px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="brand-mark"></span><span>Vintage Pomodoro</span></div>
+    <div class="nav-right">
+      <div class="lang-toggle" id="langToggle">
+        <button data-lang="ko" class="on">KO</button>
+        <button data-lang="en">EN</button>
+      </div>
+      <a class="nav-dl" href="#download" id="navDl">다운로드</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <div class="badge">WINDOWS · MACOS &nbsp;|&nbsp; FREE · NO SIGN-UP</div>
+  <h1 id="h1">방해 없는 25분,<br><em>어제보다 깊은</em> 오늘</h1>
+  <p class="sub" id="sub"></p>
+  <div class="cta-row">
+    <a class="btn btn-primary" href="https://github.com/delight0517/vintage-pomodoro/releases/download/v0.2.3/vintage-pomodoro-windows-x64.zip" id="ctaWin">🪟 Windows 무료 다운로드</a>
+    <a class="btn btn-mac" id="ctaMac" tabindex="-1">🍎 macOS — 준비 중</a>
+  </div>
+  <div class="cta-row">
+    <a class="btn btn-ghost" href="#demo" id="ctaDemo">브라우저에서 데모 체험 ↓</a>
+  </div>
+  <div class="dl-note" id="dlNote">v0.2.3 · .zip · 14 MB · portable, no installer</div>
+</header>
+
+<!-- ── 웹 데모 ── -->
+<section class="demo-band" id="demo">
+  <div class="wrap">
+    <div class="demo-frame">
+      <div class="demo-tag">DEMO</div>
+      <div class="demo-title" id="demoTitle">LIVE DEMO — TRY IT HERE</div>
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 210 210">
+          <circle class="track" cx="105" cy="105" r="92"></circle>
+          <circle class="bar" cx="105" cy="105" r="92" id="dBar"></circle>
+        </svg>
+        <div class="time-big">
+          <div id="dTime">25:00</div>
+          <div id="dPhase">FOCUS</div>
+        </div>
+      </div>
+      <div class="demo-controls">
+        <button class="d-btn go" id="dMain">▶ 집중 시작</button>
+        <button class="d-btn" id="dSkip">건너뛰기</button>
+        <button class="d-btn" id="dReset">초기화</button>
+      </div>
+      <div class="steppers">
+        <div class="step"><label>집중(분)</label>
+          <div class="sg"><button data-k="focus" data-d="-5">−</button><b id="vFocus">25</b><button data-k="focus" data-d="5">+</button></div></div>
+        <div class="step"><label>휴식(분)</label>
+          <div class="sg"><button data-k="break" data-d="-1">−</button><b id="vBreak">5</b><button data-k="break" data-d="1">+</button></div></div>
+      </div>
+      <div class="demo-stats"><span id="dToday">오늘 완료 0회</span> · <span id="dTotal">누적 집중 0분</span></div>
+    </div>
+    <p class="demo-cap" id="demoCap">※ 데모는 실제 앱의 핵심 타이머를 브라우저로 재현한 것입니다 — 잠금·통계 등은 데스크톱 앱에 있습니다.</p>
+  </div>
+</section>
+
+<!-- ── 기능 ── -->
+<section>
+  <div class="wrap">
+    <div class="kicker">FEATURES</div>
+    <h2 class="sec" id="featTitle">타이머 하나로 충분한 이유</h2>
+    <p class="sec-sub" id="featSub"></p>
+    <div class="rule-line"></div>
+    <div class="feat-grid">
+      <div class="feat"><div class="ic">⏱</div><h3 id="f1t"></h3><p id="f1p"></p></div>
+      <div class="feat"><div class="ic">🔒</div><h3 id="f2t"></h3><p id="f2p"></p></div>
+      <div class="feat"><div class="ic">🪟</div><h3 id="f3t"></h3><p id="f3p"></p></div>
+      <div class="feat"><div class="ic">📊</div><h3 id="f4t"></h3><p id="f4p"></p></div>
+      <div class="feat"><div class="ic">🚀</div><h3 id="f5t"></h3><p id="f5p"></p></div>
+      <div class="feat"><div class="ic">🎨</div><h3 id="f6t"></h3><p id="f6p"></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 설득: why ── -->
+<section class="why">
+  <div class="wrap">
+    <div class="kicker">WHY IT WORKS</div>
+    <h2 class="sec" id="whyTitle">의지력에 맡기지 마세요.<br>구조에 맡기세요.</h2>
+    <div class="why-grid">
+      <div class="why-item"><div class="num">~23<span style="font-size:20px">min</span></div><h3 id="w1t"></h3><p id="w1p"></p></div>
+      <div class="why-item"><div class="num">25+5</div><h3 id="w2t"></h3><p id="w2p"></p></div>
+      <div class="why-item"><div class="num">AUTO</div><h3 id="w3t"></h3><p id="w3p"></p></div>
+    </div>
+    <div class="why-quote" id="whyQuote"></div>
+  </div>
+</section>
+
+<!-- ── 화면 구성 ── -->
+<section>
+  <div class="wrap">
+    <div class="kicker">SCREENS</div>
+    <h2 class="sec" id="scrTitle">화면 세 개로 끝납니다</h2>
+    <div class="shots">
+      <div class="shot">
+        <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="shot-body">
+          <div class="mini-ring">
+            <svg viewBox="0 0 120 120" style="width:100%;height:100%;transform:rotate(-90deg)">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#E3DDCC" stroke-width="7"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#4F6350" stroke-width="7" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="94"/>
+            </svg>
+            <div class="time-big"><b style="font-family:var(--mono);font-size:21px">18:32</b></div>
+          </div>
+          <div class="cap" id="cap1">위젯 모드 — 화구 한켠에 조용히</div>
+        </div>
+      </div>
+      <div class="shot">
+        <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="shot-body">
+          <div class="mini-ring">
+            <svg viewBox="0 0 120 120" style="width:100%;height:100%;transform:rotate(-90deg)">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#E3DDCC" stroke-width="7"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#C79A5E" stroke-width="7" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="235"/>
+            </svg>
+            <div class="time-big"><b style="font-family:var(--mono);font-size:21px;color:#332A20">06:14</b></div>
+          </div>
+          <div class="cap" id="cap2">메인 창 — 시작 전 점검과 설정</div>
+        </div>
+      </div>
+      <div class="shot">
+        <div class="shot-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="shot-body">
+          <div class="lock-screen">
+            <div class="lt">BREAK</div>
+            <div class="lm">04:32</div>
+            <div class="ll" id="cap3txt">잠긴 화면, 진짜 휴식</div>
+          </div>
+          <div class="cap" id="cap3">강제 잠금 휴식 — 못 피하는 쉼표</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 다운로드 ── -->
+<section id="download">
+  <div class="wrap">
+    <div class="kicker">DOWNLOAD</div>
+    <h2 class="sec" id="dlTitle">30초면 실행됩니다</h2>
+    <div class="dl-grid">
+      <div class="dl-card win">
+        <div class="os-row"><span class="os-name">🪟 Windows</span><span class="pill ready" id="winPill">AVAILABLE</span></div>
+        <ol class="steps">
+          <li id="s1">ZIP 파일을 내려받습니다</li>
+          <li id="s2">압축을 풉니다</li>
+          <li id="s3">vintage_pomodoro.exe 실행 — 설치 과정 없음</li>
+        </ol>
+        <a class="btn btn-primary btn-block" href="https://github.com/delight0517/vintage-pomodoro/releases/download/v0.2.3/vintage-pomodoro-windows-x64.zip" id="dlWinBtn">⬇ Windows용 받기 (Free · 14MB)</a>
+        <p class="smartnote" id="smartNote">⚠ SmartScreen 경고 시: [추가 정보] → [실행] — 서명되지 않은 개인 배포 앱이라 표시됩니다.</p>
+      </div>
+      <div class="dl-card">
+        <div class="os-row"><span class="os-name">🍎 macOS</span><span class="pill soon" id="macPill">COMING SOON</span></div>
+        <p style="font-size:14px;color:var(--inkSoft)" id="macDesc"></p>
+        <div class="btn-disabled" style="margin-top:18px" id="macBtn">준비 중입니다</div>
+        <p class="smartnote" id="macNote">그동안 브라우저 데모와 아래 웹 버전을 이용해 주세요.</p>
+        <a class="btn btn-ghost btn-block" style="margin-top:12px;text-align:center" href="https://delight0517.github.io/pomoflow/" id="webAppBtn">🌐 웹 버전 PomoFlow 열기</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div>© 2026 delight0517 · Vintage Pomodoro · <span id="licLine">MIT License</span></div>
+    <div>
+      <a href="https://github.com/delight0517/vintage-pomodoro" id="ghLink">GitHub</a> &nbsp;·&nbsp;
+      <a href="https://github.com/delight0517/vintage-pomodoro/releases" id="relLink">Releases</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+/* ══════════ i18n ══════════ */
+const T = {
+ko: {
+  navDl:"다운로드",
+  h1:'방해 없는 25분,<br><em>어제보다 깊은</em> 오늘',
+  sub:"Vintage Pomodoro는 Windows와 macOS를 위한 포모도로 타이머입니다. 집중이 끝나면 스스로 휴식을 강제하고, 하루의 집중을 조용히 기록합니다.",
+  ctaWin:"🪟 Windows 무료 다운로드", ctaMac:"🍎 macOS — 준비 중", ctaDemo:"브라우저에서 데모 체험 ↓",
+  dlNote:"v0.2.3 · .zip · 14 MB · 포터블, 설치 불필요",
+  demoTitle:"LIVE DEMO — 여기서 바로 써보세요",
+  dFocus:"집중", dBreak:"휴식 중", dIdle:"대기",
+  mainStart:"▶ 집중 시작", mainPause:"‖ 일시정지", mainResume:"▶ 계속",
+  skip:"건너뛰기", reset:"초기화",
+  lblFocus:"집중(분)", lblBreak:"휴식(분)",
+  today:"오늘 완료 {n}회", total:"누적 집중 {m}분",
+  demoCap:"※ 데모는 실제 앱의 핵심 타이머를 브라우저로 재현한 것입니다 — 강제 잠금·통계 등은 데스크톱 앱에 있습니다.",
+  featTitle:"타이머 하나로 충분한 이유",
+  featSub:"도구는 많을수록 산만해집니다. Vintage Pomodoro는 집중에 필요한 일만, 가장 조용한 방식으로 합니다.",
+  f:["⏱","🔒","🪟","📊","🚀","🎨"],
+  f1t:"정확한 포모도로 엔진", f1p:"시계(Date) 기반 계산이라 노트북을 덮었다 열어도, 다른 작업을 해도 시간은 정확합니다. 4회마다 긴 휴식까지 자동.",
+  f2t:"강제 잠금 휴식", f2p:"휴식 시간이 되면 화면과 키보드를 잠급니다. \"조금만 더\"라는 유혹에서 당신을 지켜주는, 이 앱의 심장입니다.",
+  f3t:"위젯 · 메인 · 잠금화면", f3p:"작업 중엔 화면 구석의 작은 링으로, 준비할 땐 메인 창으로, 휴식엔 전체 화면으로. 창이 당신의 리듬을 따라갑니다.",
+  f4t:"오늘의 기록", f4p:"완료한 포모도로 수와 누적 집중 분을 하루 단위로 보여줍니다. 의욕은 기록에서 나옵니다.",
+  f5t:"트레이 상주 · 자동실행", f5p:"부팅 시 스스로 떠서 트레이에 대기합니다. 매일 켜는 습관까지 앱이 챙깁니다.",
+  f6t:"빈티지 페이퍼 디자인", f6p:"날것의 종이와 황동빛 악센트, 장식을 걷어낸 세리프 타이포. 도구가 주인공이 되는 조용한 화면.",
+  whyTitle:'의지력에 맡기지 마세요.<br>구조에 맡기세요.',
+  w1t:"산만해지는 데는 23분", w1p:"UCI Gloria Mark 연구팀에 따르면 화면 작업자의 집중은 평균 약 23분 만에 다른 곳으로 옮아갑니다.",
+  w2t:"검증된 리듬", w2p:"25분 집중 + 5분 휴식. 포모도로 테크닉은 1980년대부터 쓰인, 가장 단순하고 가장 오래 검증된 집중 구조입니다.",
+  w3t:"휴식은 선택이 아니라 설계", w3p:"알림으로 끝나는 휴식은 언제나 무시됩니다. 화면을 잠가버리는 휴식은 지켜집니다. 그 차이가 하루를 바꿉니다.",
+  whyQuote:'“당신은 집중할 수 없는 게 아닙니다. 멈출 수 없는 것뿐입니다.”<small>— Vintage Pomodoro가 해답을 내려놓은 지점</small>',
+  scrTitle:"화면 세 개로 끝납니다",
+  cap1:"위젯 모드 — 화면 한켠에 조용히", cap2:"메인 창 — 시작 전 점검과 설정", cap3txt:"잠긴 화면, 진짜 휴식", cap3b:"강제 잠금 휴식 — 못 피하는 쉼표",
+  dlTitle:"30초면 실행됩니다", winPill:"바로 사용 가능", macPill:"준비 중",
+  s1:"ZIP 파일을 내려받습니다", s2:"압축을 풉니다", s3:"vintage_pomodoro.exe 실행 — 설치 과정 없음",
+  dlWinBtn:"⬇ Windows용 받기 (Free · 14MB)",
+  smartNote:"⚠ SmartScreen 경고 시: [추가 정보] → [실행] — 서명되지 않은 개인 배포 앱이라 표시됩니다.",
+  macDesc:"macOS 네이티브 빌드를 준비하고 있습니다. 출시하면 이곳에 가장 먼저 올립니다.",
+  macBtn:"준비 중입니다", macNote:"그동안 브라우저 데모와 아래 웹 버전을 이용해 주세요.",
+  webAppBtn:"🌐 웹 버전 PomoFlow 열기",
+  licLine:"MIT License", ghLink:"GitHub", relLink:"릴리스 목록"
+},
+en: {
+  navDl:"Download",
+  h1:'Twenty-five undisturbed minutes.<br><em>A deeper</em> today.',
+  sub:"Vintage Pomodoro is a Pomodoro timer for Windows & macOS. When focus ends, it makes you take the break — and quietly keeps the record of your day.",
+  ctaWin:"🪟 Download for Windows — Free", ctaMac:"🍎 macOS — Coming Soon", ctaDemo:"Try the web demo ↓",
+  dlNote:"v0.2.3 · .zip · 14 MB · portable, no installer",
+  demoTitle:"LIVE DEMO — TRY IT RIGHT HERE",
+  dFocus:"FOCUS", dBreak:"BREAK", dIdle:"IDLE",
+  mainStart:"▶ Start Focus", mainPause:"‖ Pause", mainResume:"▶ Resume",
+  skip:"Skip", reset:"Reset",
+  lblFocus:"Focus (min)", lblBreak:"Break (min)",
+  today:"Today: {n} done", total:"Total focus: {m} min",
+  demoCap:"* This demo recreates the core timer in your browser — enforced locking & full stats live in the desktop app.",
+  featTitle:"Why one timer is enough",
+  featSub:"More tools, more distraction. Vintage Pomodoro does only what focus needs — in the quietest way possible.",
+  f1t:"A precise Pomodoro engine", f1p:"Clock-based math: close the lid, switch windows — time stays exact. Longer break every 4 rounds, automatically.",
+  f2t:"Enforced lock breaks", f2p:"When it's time to rest, the screen locks and the keyboard sleeps. This is the heart of the app — saving you from “just five more minutes.”",
+  f3t:"Widget · Main · Lock screen", f3p:"A small ring in the corner while you work, the main window when you prepare, full screen when you rest.",
+  f4t:"Your day, recorded", f4p:"Completed pomodoros and total focused minutes, day by day. Motivation follows the record.",
+  f5t:"Tray-resident · Auto-start", f5p:"Launches with your PC and waits in the tray. Even the habit of opening it is handled.",
+  f6t:"Vintage paper design", f6p:"Aged paper, brass accents, unadorned serif type — a quiet screen where the work stays the protagonist.",
+  whyTitle:"Don't rely on willpower.<br>Rely on structure.",
+  w1t:"Attention drifts in ~23 min", w1p:"Research by Gloria Mark (UCI) found screen workers switch attention roughly every 23 minutes.",
+  w2t:"A proven rhythm", w2p:"25 minutes on, 5 off. The Pomodoro Technique — the simplest, longest-proven structure for deep work since the 1980s.",
+  w3t:"Rest by design, not by choice", w3p:"A notification can be ignored. A locked screen cannot. That difference changes your whole day.",
+  whyQuote:'“You are not unable to focus. You are unable to stop.”<small>— The problem Vintage Pomodoro chose to solve</small>',
+  scrTitle:"Three screens. That's all.",
+  cap1:"Widget mode — quiet, in the corner", cap2:"Main window — check & set before you start", cap3txt:"A locked screen, a real break", cap3b:"Enforced break — the pause you can't skip",
+  dlTitle:"Running in 30 seconds", winPill:"AVAILABLE", macPill:"COMING SOON",
+  s1:"Download the ZIP", s2:"Unzip it", s3:"Run vintage_pomodoro.exe — no installer",
+  dlWinBtn:"⬇ Get it for Windows (Free · 14MB)",
+  smartNote:"⚠ If SmartScreen warns: click [More info] → [Run anyway] — unsigned personal build.",
+  macDesc:"The native macOS build is in preparation. It will land here first.",
+  macBtn:"Coming soon", macNote:"Meanwhile, enjoy the browser demo and the web version below.",
+  webAppBtn:"🌐 Open the web version (PomoFlow)",
+  licLine:"MIT License", ghLink:"GitHub", relLink:"All releases"
+}};
+
+let lang = "ko";
+function fmt(t){ return t.replace("{n}", state.today).replace("{m}", state.totalMin); }
+function applyLang(l){
+  lang = l; const d = T[l];
+  document.documentElement.lang = l;
+  const $ = id => document.getElementById(id);
+  $("h1").innerHTML = d.h1; $("sub").textContent = d.sub;
+  $("ctaWin").textContent = d.ctaWin; $("ctaMac").textContent = d.ctaMac; $("ctaDemo").textContent = d.ctaDemo;
+  $("dlNote").textContent = d.dlNote; $("navDl").textContent = d.navDl;
+  $("demoTitle").textContent = d.demoTitle;
+  $("dPhase").textContent = state.phase==="focus"?d.dFocus:(state.phase==="break"?d.dBreak:d.dIdle);
+  $("dMain").textContent = state.running ? d.mainPause : (state.started ? d.mainResume : d.mainStart);
+  $("dSkip").textContent = d.skip; $("dReset").textContent = d.reset;
+  document.querySelector(".step label").textContent = d.lblFocus;
+  document.querySelectorAll(".step label")[1].textContent = d.lblBreak;
+  $("dToday").textContent = fmt(d.today); $("dTotal").textContent = fmt(d.total);
+  $("demoCap").textContent = d.demoCap;
+  $("featTitle").textContent = d.featTitle; $("featSub").textContent = d.featSub;
+  ["1","2","3","4","5","6"].forEach((n)=>{ $("f"+n+"t").textContent=d["f"+n+"t"]; $("f"+n+"p").textContent=d["f"+n+"p"]; });
+  $("whyTitle").innerHTML = d.whyTitle;
+  [["1"],["2"],["3"]].forEach(([n])=>{ $("w"+n+"t").textContent=d["w"+n+"t"]; $("w"+n+"p").textContent=d["w"+n+"p"]; });
+  $("whyQuote").innerHTML = d.whyQuote;
+  $("scrTitle").textContent = d.scrTitle;
+  $("cap1").textContent = d.cap1; $("cap2").textContent = d.cap2;
+  $("cap3txt").textContent = d.cap3txt; $("cap3").textContent = d.cap3b;
+  $("dlTitle").textContent = d.dlTitle;
+  $("winPill").textContent = d.winPill; $("macPill").textContent = d.macPill;
+  $("s1").textContent = d.s1; $("s2").textContent = d.s2; $("s3").textContent = d.s3;
+  $("dlWinBtn").textContent = d.dlWinBtn; $("smartNote").textContent = d.smartNote;
+  $("macDesc").textContent = d.macDesc; $("macBtn").textContent = d.macBtn; $("macNote").textContent = d.macNote;
+  $("webAppBtn").textContent = d.webAppBtn;
+  $("licLine").textContent = d.licLine; $("relLink").textContent = d.relLink;
+  try{ localStorage.setItem("vp_lang", l); }catch(e){}
+}
+document.querySelectorAll("#langToggle button").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    document.querySelectorAll("#langToggle button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); applyLang(b.dataset.lang);
+  });
+});
+try{ const saved=localStorage.getItem("vp_lang"); if(saved&&T[saved]){ lang=saved; } }catch(e){}
+document.querySelectorAll("#langToggle button").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
+
+/* ══════════ 데모 타이머 (실제 앱 로직 재현) ══════════ */
+const state = { focus:25, brk:5, phase:"idle", running:false, started:false,
+                remain:25*60, total:25*60, lastTick:0, today:0, totalMin:0 };
+const CIRC = 2*Math.PI*92;
+document.getElementById("dBar").style.strokeDasharray = CIRC;
+
+function mmss(s){ s=Math.max(0,Math.ceil(s)); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+function paint(){
+  const $ = id=>document.getElementById(id);
+  $("dTime").textContent = mmss(state.remain);
+  const T_=T[lang];
+  $("dPhase").textContent = state.phase==="focus"?T_.dFocus:(state.phase==="break"?T_.dBreak:T_.dIdle);
+  const frac = state.phase==="idle"?1:state.remain/state.total;
+  $("dBar").style.strokeDashoffset = CIRC*(1-frac);
+  $("dBar").style.stroke = state.phase==="break" ? "#E2503E" : "#4F6350";
+  $("dMain").textContent = state.running ? T_.mainPause : (state.started ? T_.mainResume : T_.mainStart);
+  $("dMain").className = "d-btn " + (state.running ? "stop" : "go");
+  $("dToday").textContent = fmt(T_.today); $("dTotal").textContent = fmt(T_.total);
+}
+function tickLoop(){
+  if(!state.running) return;
+  const now = Date.now();
+  state.remain -= (now-state.lastTick)/1000; state.lastTick = now;
+  if(state.remain<=0){ state.remain=0; finishPhase(); }
+  paint();
+}
+let loopId=null;
+function startPhase(ph){
+  state.phase=ph; state.total=(ph==="focus"?state.focus:state.brk)*60;
+  state.remain=state.total; state.lastTick=Date.now(); state.running=true; state.started=true;
+  clearInterval(loopId); loopId=setInterval(tickLoop,250); paint();
+}
+function toggleRun(){
+  if(!state.started || state.phase==="idle"){ startPhase("focus"); return; }
+  if(state.running){ state.running=false; clearInterval(loopId); }
+  else { state.running=true; state.lastTick=Date.now(); loopId=setInterval(tickLoop,250); }
+  paint();
+}
+function finishPhase(){
+  state.running=false; clearInterval(loopId);
+  try{
+    const ac=new (window.AudioContext||window.webkitAudioContext)();
+    const notes = state.phase==="focus" ? [659.25,783.99] : [783.99,659.25];
+    notes.forEach((f,i)=>{ const o=ac.createOscillator(),g=ac.createGain();
+      o.type="sine"; o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,ac.currentTime+i*.18);
+      g.gain.exponentialRampToValueAtTime(.25,ac.currentTime+i*.18+.03);
+      g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+i*.18+.55);
+      o.connect(g).connect(ac.destination); o.start(ac.currentTime+i*.18); o.stop(ac.currentTime+i*.18+.6); });
+  }catch(e){}
+  if(state.phase==="focus"){ state.today++; state.totalMin+=state.focus; startPhase("break"); }
+  else { state.phase="idle"; state.remain=state.focus*60; state.total=state.focus*60; state.started=false; }
+  paint();
+}
+document.getElementById("dMain").addEventListener("click", toggleRun);
+document.getElementById("dSkip").addEventListener("click", ()=>{ if(state.phase!=="idle"){ state.remain=0.01; tickLoop(); } else startPhase("focus"); });
+document.getElementById("dReset").addEventListener("click", ()=>{
+  state.running=false; clearInterval(loopId); state.phase="idle"; state.started=false;
+  state.total=state.focus*60; state.remain=state.total; paint();
+});
+document.querySelectorAll(".step button").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const k=b.dataset.k, dd=parseInt(b.dataset.d,10);
+    if(k==="focus"){ state.focus=Math.min(180,Math.max(5,state.focus+dd)); document.getElementById("vFocus").textContent=state.focus; }
+    else { state.brk=Math.min(60,Math.max(1,state.brk+dd)); document.getElementById("vBreak").textContent=state.brk; }
+    if(!state.started){ state.total=(state.phase==="focus"||state.phase==="idle")&&k==="focus"?state.focus*60:state.brk*60;
+      if(state.phase!=="break"){ state.total=k==="focus"?state.focus*60:state.brk*60; state.remain=state.total; } }
+    paint();
+  });
+});
+applyLang(lang); paint();
+})();
+</script>
+</body>
+</html>
