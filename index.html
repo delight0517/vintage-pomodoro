@@ -408,6 +408,7 @@ ko: {
   scrTitle:"화면 세 개로 끝납니다",
   cap1:"위젯 모드 — 화면 한켠에 조용히", cap2:"메인 창 — 시작 전 점검과 설정", cap3txt:"잠긴 화면, 진짜 휴식", cap3b:"강제 잠금 휴식 — 못 피하는 쉼표",
   dlTitle:"30초면 실행됩니다", winPill:"바로 사용 가능", macPill:"준비 중",
+  storeNote:"🏅 Microsoft Store 등록 준비 중 — 검수를 거친 서명 버전이 곧 제공됩니다",
   s1:"ZIP 파일을 내려받습니다", s2:"압축을 풉니다", s3:"vintage_pomodoro.exe 실행 — 설치 과정 없음",
   dlWinBtn:"⬇ Windows용 받기 (Free · 14MB)",
   smartNote:"⚠ SmartScreen 경고 시: [추가 정보] → [실행] — 서명되지 않은 개인 배포 앱이라 표시됩니다.",
@@ -445,6 +446,7 @@ en: {
   scrTitle:"Three screens. That's all.",
   cap1:"Widget mode — quiet, in the corner", cap2:"Main window — check & set before you start", cap3txt:"A locked screen, a real break", cap3b:"Enforced break — the pause you can't skip",
   dlTitle:"Running in 30 seconds", winPill:"AVAILABLE", macPill:"COMING SOON",
+  storeNote:"🏅 Microsoft Store release in progress — signed build coming soon",
   s1:"Download the ZIP", s2:"Unzip it", s3:"Run vintage_pomodoro.exe — no installer",
   dlWinBtn:"⬇ Get it for Windows (Free · 14MB)",
   smartNote:"⚠ If SmartScreen warns: click [More info] → [Run anyway] — unsigned personal build.",
@@ -481,6 +483,7 @@ function applyLang(l){
   $("cap3txt").textContent = d.cap3txt; $("cap3").textContent = d.cap3b;
   $("dlTitle").textContent = d.dlTitle;
   $("winPill").textContent = d.winPill; $("macPill").textContent = d.macPill;
+  if($("storeNote")) $("storeNote").textContent = d.storeNote;
   $("s1").textContent = d.s1; $("s2").textContent = d.s2; $("s3").textContent = d.s3;
   $("dlWinBtn").textContent = d.dlWinBtn; $("smartNote").textContent = d.smartNote;
   $("macDesc").textContent = d.macDesc; $("macBtn").textContent = d.macBtn; $("macNote").textContent = d.macNote;
@@ -494,6 +497,8 @@ document.querySelectorAll("#langToggle button").forEach(b=>{
     b.classList.add("on"); applyLang(b.dataset.lang);
   });
 });
+const browserLang = (navigator.language || "").toLowerCase();
+lang = browserLang.startsWith("en") ? "en" : "ko";
 try{ const saved=localStorage.getItem("vp_lang"); if(saved&&T[saved]){ lang=saved; } }catch(e){}
 document.querySelectorAll("#langToggle button").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
 
