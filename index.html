@@ -190,7 +190,10 @@
 
   @media (max-width:560px){
     header.hero{ padding-top:56px; }
-    .nav-dl{ padding:8px 13px; font-size:12.5px; }
+    .brand span:not(.brand-mark){display:none}
+    .nav-right{gap:7px}
+    .lang-toggle button{padding:4px 5px;font-size:10px}
+    .nav-dl{ padding:7px 9px; font-size:11px; }
     .steppers{ gap:12px; }
   }
 </style>
@@ -204,6 +207,9 @@
       <div class="lang-toggle" id="langToggle">
         <button data-lang="ko" class="on">KO</button>
         <button data-lang="en">EN</button>
+        <button data-lang="ja">JA</button>
+        <button data-lang="zh">中文</button>
+        <button data-lang="es">ES</button>
       </div>
       <a class="nav-dl" href="#download" id="navDl">다운로드</a>
     </div>
@@ -380,6 +386,7 @@
 /* ══════════ i18n ══════════ */
 const T = {
 ko: {
+  title:"Vintage Pomodoro — 방해 없는 25분 (Windows · macOS)", description:"Windows·macOS용 빈티지 포모도로 타이머. 집중이 끝나면 휴식을 강제하고 하루를 조용히 기록합니다.", badge:"WINDOWS · MACOS &nbsp;|&nbsp; 무료 · 가입 불필요", kickers:["기능","왜 구조가 필요한가","화면 구성","다운로드"],
   navDl:"다운로드",
   h1:'방해 없는 25분,<br><em>어제보다 깊은</em> 오늘',
   sub:"Vintage Pomodoro는 Windows와 macOS를 위한 포모도로 타이머입니다. 집중이 끝나면 스스로 휴식을 강제하고, 하루의 집중을 조용히 기록합니다.",
@@ -419,6 +426,7 @@ ko: {
   licLine:"MIT License", ghLink:"GitHub", relLink:"릴리스 목록"
 },
 en: {
+  title:"Vintage Pomodoro — 25 Undisturbed Minutes (Windows · macOS)", description:"A vintage Pomodoro timer for Windows and macOS. Enforced breaks and a quiet daily focus record.", badge:"WINDOWS · MACOS &nbsp;|&nbsp; FREE · NO SIGN-UP", kickers:["FEATURES","WHY STRUCTURE HELPS","SCREENS","DOWNLOAD"],
   navDl:"Download",
   h1:'Twenty-five undisturbed minutes.<br><em>A deeper</em> today.',
   sub:"Vintage Pomodoro is a Pomodoro timer for Windows & macOS. When focus ends, it makes you take the break — and quietly keeps the record of your day.",
@@ -455,14 +463,80 @@ en: {
   macBtn:"Coming soon", macNote:"Meanwhile, enjoy the browser demo and the web version below.",
   webAppBtn:"🌐 Open the web version (PomoFlow)",
   licLine:"MIT License", ghLink:"GitHub", relLink:"All releases"
+},
+ja: {
+  title:"Vintage Pomodoro — 邪魔のない25分 (Windows · macOS)", description:"WindowsとmacOS向けのヴィンテージ風ポモドーロタイマー。集中後の休憩を促し、一日の記録を残します。",
+  navDl:"ダウンロード", h1:'邪魔のない25分。<br><em>昨日より深い</em>今日。', sub:"Vintage PomodoroはWindowsとmacOS向けのタイマーです。集中時間が終わると休憩に切り替わり、一日の集中を静かに記録します。",
+  ctaWin:"🪟 Windows版を無料ダウンロード", ctaMac:"🍎 macOS — 近日公開", ctaDemo:"ブラウザーで試す ↓", dlNote:"v0.2.3 · .zip · 14 MB · インストール不要", demoTitle:"ライブデモ — ここで試せます",
+  dFocus:"集中", dBreak:"休憩", dIdle:"待機", mainStart:"▶ 集中を開始", mainPause:"‖ 一時停止", mainResume:"▶ 再開", skip:"スキップ", reset:"リセット", lblFocus:"集中（分）", lblBreak:"休憩（分）", today:"今日の完了 {n}回", total:"集中時間 {m}分",
+  demoCap:"※ブラウザー版はタイマーのデモです。画面ロックや詳細な統計はデスクトップ版で利用できます。",
+  featTitle:"タイマーは一つで十分", featSub:"道具が増えるほど気が散ります。Vintage Pomodoroは集中に必要な機能だけを静かに提供します。",
+  f1t:"正確なタイマー", f1p:"時計に基づいて計算するため、画面を閉じたり作業を切り替えたりしても時間は正確です。4回ごとに長い休憩を取ります。",
+  f2t:"休憩中は画面をロック", f2p:"休憩時間になると画面とキーボードをロックし、作業を続けてしまうのを防ぎます。",
+  f3t:"ウィジェット・メイン画面・ロック画面", f3p:"作業中は小さなリング、準備中はメイン画面、休憩中は全画面で表示します。",
+  f4t:"一日の記録", f4p:"完了した回数と集中時間を日ごとに表示します。記録が次のやる気につながります。",
+  f5t:"トレイ常駐・自動起動", f5p:"PC起動時に立ち上がり、トレイで待機します。毎日の習慣を支えます。",
+  f6t:"ヴィンテージな紙のデザイン", f6p:"紙の質感、真鍮色のアクセント、シンプルなセリフ体で落ち着いた画面に仕上げました。",
+  whyTitle:'意志力に頼らず、<br>仕組みに任せましょう。', w1t:"集中は約23分で移る", w1p:"UCIのGloria Mark研究チームは、画面作業中の注意が平均約23分で移ると報告しています。",
+  w2t:"実績あるリズム", w2p:"25分集中して5分休憩。1980年代から使われているシンプルなポモドーロ・テクニックです。",
+  w3t:"休憩を仕組みにする", w3p:"通知は無視できますが、ロック画面は無視できません。その違いが一日を変えます。",
+  whyQuote:'「集中できないのではありません。止められないだけです。」<small>— Vintage Pomodoroが解決する課題</small>', scrTitle:"画面は3つだけ", cap1:"ウィジェット — 画面の隅に", cap2:"メイン画面 — 開始前の確認と設定", cap3txt:"画面をロックして、本当に休む", cap3b:"強制休憩 — スキップできない小休止",
+  dlTitle:"30秒で使えます", winPill:"利用可能", macPill:"近日公開", storeNote:"🏅 Microsoft Storeへの登録準備中 — 署名版を近日公開予定", s1:"ZIPをダウンロード", s2:"ZIPを展開", s3:"vintage_pomodoro.exeを実行 — インストール不要",
+  dlWinBtn:"⬇ Windows版をダウンロード（無料 · 14MB）", smartNote:"⚠ SmartScreenが表示された場合：[詳細情報] → [実行] — 個人配布の未署名アプリです。",
+  macDesc:"macOSネイティブ版を準備中です。公開後はこちらに掲載します。", macBtn:"準備中", macNote:"公開まではブラウザデモと下記ウェブ版をご利用ください。", webAppBtn:"🌐 PomoFlowウェブ版を開く", licLine:"MITライセンス", ghLink:"GitHub", relLink:"全リリース", badge:"WINDOWS · MACOS &nbsp;|&nbsp; 無料 · 登録不要", kickers:["機能","仕組みが役立つ理由","画面","ダウンロード"]
+},
+zh: {
+  title:"Vintage Pomodoro — 不受打扰的25分钟 (Windows · macOS)", description:"适用于 Windows 和 macOS 的复古番茄钟。专注结束后强制休息，并安静记录每日专注时间。",
+  navDl:"下载", h1:'不受打扰的25分钟。<br><em>比昨天更专注</em>的今天。', sub:"Vintage Pomodoro 是适用于 Windows 和 macOS 的番茄钟。专注结束后会提醒你休息，并安静记录每天的专注时间。",
+  ctaWin:"🪟 免费下载 Windows 版", ctaMac:"🍎 macOS — 即将推出", ctaDemo:"体验网页演示 ↓", dlNote:"v0.2.3 · .zip · 14 MB · 免安装", demoTitle:"实时演示 — 立即体验",
+  dFocus:"专注", dBreak:"休息", dIdle:"待机", mainStart:"▶ 开始专注", mainPause:"‖ 暂停", mainResume:"▶ 继续", skip:"跳过", reset:"重置", lblFocus:"专注（分钟）", lblBreak:"休息（分钟）", today:"今日完成 {n} 次", total:"累计专注 {m} 分钟",
+  demoCap:"※网页演示展示计时器核心功能。强制锁屏和完整统计仅在桌面应用中提供。",
+  featTitle:"一个计时器就够了", featSub:"工具越多越容易分心。Vintage Pomodoro 只保留专注所需的功能。",
+  f1t:"精准的番茄钟", f1p:"根据时钟计算时间，合上笔记本或切换任务后仍准确计时。每完成四轮自动安排长休息。",
+  f2t:"强制锁屏休息", f2p:"休息时间到后锁定屏幕和键盘，帮你真正停下来休息。",
+  f3t:"小组件 · 主窗口 · 锁屏", f3p:"工作时显示角落计时环，准备时使用主窗口，休息时切换到全屏。",
+  f4t:"每日记录", f4p:"按天记录完成轮数和专注分钟。回顾记录，继续前进。",
+  f5t:"常驻托盘 · 自动启动", f5p:"电脑开机后自动启动并停留在系统托盘，帮助养成日常习惯。",
+  f6t:"复古纸张设计", f6p:"纸张质感、黄铜色点缀和简洁衬线字体，让界面保持安静。",
+  whyTitle:'别只靠意志力。<br>让结构帮你坚持。', w1t:"注意力约23分钟后转移", w1p:"UCI 的 Gloria Mark 研究团队发现，屏幕工作者的注意力平均约23分钟就会转移。",
+  w2t:"经过验证的节奏", w2p:"专注25分钟，休息5分钟。番茄工作法自1980年代起便广泛使用。", w3t:"把休息写进流程", w3p:"通知可以忽略，锁定的屏幕不会。这个差异会改变一天的节奏。",
+  whyQuote:'“你并非无法专注，只是难以停下来。”<small>— Vintage Pomodoro希望解决的问题</small>', scrTitle:"三个界面，简单够用", cap1:"小组件 — 安静地待在角落", cap2:"主窗口 — 开始前检查和设置", cap3txt:"锁定屏幕，真正休息", cap3b:"强制休息 — 无法跳过的暂停",
+  dlTitle:"30秒即可启动", winPill:"可用", macPill:"即将推出", storeNote:"🏅 正在准备上架 Microsoft Store — 签名版本即将推出", s1:"下载 ZIP 文件", s2:"解压文件", s3:"运行 vintage_pomodoro.exe — 无需安装",
+  dlWinBtn:"⬇ 下载 Windows 版（免费 · 14MB）", smartNote:"⚠ 若出现 SmartScreen 提示：点击[更多信息] → [仍要运行] — 这是未签名的个人发布版本。",
+  macDesc:"macOS 原生版本正在准备中，发布后会优先在此提供。", macBtn:"准备中", macNote:"目前可使用网页演示和下方网页版本。", webAppBtn:"🌐 打开 PomoFlow 网页版", licLine:"MIT 许可", ghLink:"GitHub", relLink:"所有版本", badge:"WINDOWS · MACOS &nbsp;|&nbsp; 免费 · 无需注册", kickers:["功能","为什么需要结构","界面","下载"]
+},
+es: {
+  title:"Vintage Pomodoro — 25 minutos sin interrupciones (Windows · macOS)", description:"Temporizador Pomodoro vintage para Windows y macOS. Programa descansos y registra tu concentración diaria.",
+  navDl:"Descargar", h1:'25 minutos sin interrupciones.<br><em>Un día más profundo</em> que ayer.', sub:"Vintage Pomodoro es un temporizador para Windows y macOS. Al terminar la concentración, programa un descanso y registra tu actividad diaria.",
+  ctaWin:"🪟 Descargar gratis para Windows", ctaMac:"🍎 macOS — Próximamente", ctaDemo:"Probar demo web ↓", dlNote:"v0.2.3 · .zip · 14 MB · portátil, sin instalación", demoTitle:"DEMO EN VIVO — PRUÉBALA AQUÍ",
+  dFocus:"CONCENTRACIÓN", dBreak:"DESCANSO", dIdle:"EN ESPERA", mainStart:"▶ Empezar", mainPause:"‖ Pausar", mainResume:"▶ Continuar", skip:"Saltar", reset:"Reiniciar", lblFocus:"Concentración (min)", lblBreak:"Descanso (min)", today:"Hoy: {n} completados", total:"Concentración total: {m} min",
+  demoCap:"※ La demo reproduce el temporizador principal. El bloqueo y las estadísticas completas están en la app de escritorio.",
+  featTitle:"Un temporizador es suficiente", featSub:"Más herramientas pueden distraer. Vintage Pomodoro conserva lo necesario para concentrarte.",
+  f1t:"Temporizador preciso", f1p:"El reloj mantiene la precisión aunque cierres el portátil o cambies de tarea. Cada cuatro ciclos incluye un descanso largo.",
+  f2t:"Descanso con bloqueo", f2p:"Al llegar el descanso, bloquea la pantalla y el teclado para ayudarte a parar de verdad.",
+  f3t:"Widget · Ventana · Pantalla bloqueada", f3p:"Un anillo discreto mientras trabajas, una ventana para prepararte y pantalla completa durante el descanso.",
+  f4t:"Registro diario", f4p:"Consulta ciclos completados y minutos de concentración cada día. Los registros ayudan a mantener el ritmo.",
+  f5t:"En la bandeja · Inicio automático", f5p:"Se inicia con el PC y espera en la bandeja del sistema para acompañar tu rutina.",
+  f6t:"Diseño de papel vintage", f6p:"Textura de papel, detalles en latón y tipografía serif sencilla para una pantalla tranquila.",
+  whyTitle:'No dependas solo de la voluntad.<br>Apóyate en una estructura.', w1t:"La atención cambia en unos 23 min", w1p:"El equipo de Gloria Mark (UCI) observó que la atención frente a una pantalla cambia aproximadamente cada 23 minutos.",
+  w2t:"Un ritmo probado", w2p:"25 minutos de concentración y 5 de descanso. La técnica Pomodoro se utiliza desde los años 80.", w3t:"Descansar también se diseña", w3p:"Una notificación se puede ignorar; una pantalla bloqueada no. Esa diferencia cambia el día.",
+  whyQuote:'“No es que no puedas concentrarte. Es que te cuesta parar.”<small>— El problema que Vintage Pomodoro quiere resolver</small>', scrTitle:"Tres pantallas y nada más", cap1:"Widget — discreto en una esquina", cap2:"Ventana principal — revisa y configura", cap3txt:"Pantalla bloqueada, descanso real", cap3b:"Descanso forzado — una pausa que no se salta",
+  dlTitle:"Listo en 30 segundos", winPill:"DISPONIBLE", macPill:"PRÓXIMAMENTE", storeNote:"🏅 Preparando el lanzamiento en Microsoft Store — pronto habrá una versión firmada", s1:"Descarga el ZIP", s2:"Descomprímelo", s3:"Ejecuta vintage_pomodoro.exe — sin instalación",
+  dlWinBtn:"⬇ Descargar para Windows (gratis · 14 MB)", smartNote:"⚠ Si aparece SmartScreen: [Más información] → [Ejecutar de todas formas] — es una versión personal sin firmar.",
+  macDesc:"Estamos preparando la versión nativa para macOS. Se publicará aquí primero.", macBtn:"En preparación", macNote:"Mientras tanto, usa la demo y la versión web de abajo.", webAppBtn:"🌐 Abrir PomoFlow web", licLine:"Licencia MIT", ghLink:"GitHub", relLink:"Todas las versiones", badge:"WINDOWS · MACOS &nbsp;|&nbsp; GRATIS · SIN REGISTRO", kickers:["FUNCIONES","POR QUÉ AYUDA UNA ESTRUCTURA","PANTALLAS","DESCARGA"]
 }};
 
 let lang = "ko";
 function fmt(t){ return t.replace("{n}", state.today).replace("{m}", state.totalMin); }
 function applyLang(l){
   lang = l; const d = T[l];
-  document.documentElement.lang = l;
+  document.documentElement.lang = l==="zh"?"zh-CN":l;
+  document.title=d.title;
+  document.querySelector('meta[name="description"]').content=d.description;
+  document.querySelector('meta[property="og:title"]').content=d.title;
   const $ = id => document.getElementById(id);
+  document.querySelector(".badge").innerHTML=d.badge;
+  document.querySelectorAll(".kicker").forEach((el,i)=>{if(d.kickers[i])el.textContent=d.kickers[i]});
   $("h1").innerHTML = d.h1; $("sub").textContent = d.sub;
   $("ctaWin").textContent = d.ctaWin; $("ctaMac").textContent = d.ctaMac; $("ctaDemo").textContent = d.ctaDemo;
   $("dlNote").textContent = d.dlNote; $("navDl").textContent = d.navDl;
@@ -498,8 +572,9 @@ document.querySelectorAll("#langToggle button").forEach(b=>{
     b.classList.add("on"); applyLang(b.dataset.lang);
   });
 });
-const browserLang = (navigator.language || "").toLowerCase();
-lang = browserLang.startsWith("en") ? "en" : "ko";
+const langOverride=new URLSearchParams(location.search).get("lang");
+const browserLangs=langOverride?[langOverride]:(navigator.languages||[navigator.language||"en"]);
+lang=browserLangs.map(x=>x.toLowerCase().split("-")[0]).find(x=>T[x])||"en";
 try{ const saved=localStorage.getItem("vp_lang"); if(saved&&T[saved]){ lang=saved; } }catch(e){}
 document.querySelectorAll("#langToggle button").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
 
